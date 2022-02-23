@@ -159,6 +159,9 @@ checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
 
 # Model weights are saved at the end of every epoch, if it's the best seen
 # so far.
+model.compile(loss="mean_squared_error" )
+
+
 history = model.fit(dataset, epochs=Epochs, callbacks=[checkpoint_callback])
 
 
