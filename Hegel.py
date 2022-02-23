@@ -7,7 +7,7 @@ import time
 import tensorflow as tf
 import torch
 import keras
-from tensorflow import Sequential
+from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
@@ -93,6 +93,12 @@ Buffer_size = 10000
 
 dataset = dataset.shuffle(Buffer_size).batch(Batch_size, drop_remainder=True)
 
+# The embedding dimension
+embedding_dim = 256
+
+# Number of RNN units
+rnn_units = 1024
+
 
 #building the model
 #must shuffle the data and pack it into batches first:
@@ -108,3 +114,20 @@ def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
 #applies the dense layer to generate logits predicting the log-likehood of the next character
 
 model = build_model(vocab_size=len(vocab), embedding_dim=embedding_dim, rnn_units=rnn_units, batch_size = Batch_size)
+
+#trying the model:
+
+for input_example_batch, target_example_batch in dataset.take(1):
+    example_batch_predictions =  model(input_example_batch)
+    print(example_batch_predictions.shape, "bathc size, seq length, vocab size")
+
+
+#creating sample indices for the first example batch
+#draws samples from the categorical distribution
+sampled_indices = tf.random.categorical(example_batch_predictions[0], num_samples =1)
+
+#Use squeeze to discard the dimensions of length one out of the shape of a stated
+sampled_indices = tf.squeeze(sampled_indices, axis=1).numpy()
+
+print("input:", repr("".join(idx2char[input_example_batch[0]])))
+print("input:", repr("".join(idx2char[sampled_indices])))
