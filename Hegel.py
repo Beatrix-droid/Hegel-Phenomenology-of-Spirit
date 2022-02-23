@@ -131,3 +131,36 @@ sampled_indices = tf.squeeze(sampled_indices, axis=1).numpy()
 
 print("input:", repr("".join(idx2char[input_example_batch[0]])))
 print("input:", repr("".join(idx2char[sampled_indices])))
+
+
+#training the model
+
+def loss(labels, logits):
+    return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
+
+example_batch_loss = loss(target_example_batch, example_batch_predictions)
+print("prediction shape:", example_batch_predictions.shape,  "batch size, seq length, vocab size")
+print("scaler_loss", example_batch_loss.numpy().mean())
+
+
+
+#execute training to be run tonight:
+
+Epochs = 100
+
+checkpoint_filepath = '/tmp/checkpoint'
+checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath=checkpoint_filepath,
+    save_weights_only=True,
+    monitor='val_accuracy',
+    mode='max',
+    save_best_only=True)
+
+
+# Model weights are saved at the end of every epoch, if it's the best seen
+# so far.
+history = model.fit(dataset, epochs=Epochs, callbacks=[checkpoint_callback])
+
+
+# The model weights (that are considered the best) are loaded into the model.
+model.load_weights(checkpoint_filepath)
