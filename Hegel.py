@@ -146,16 +146,16 @@ print("scaler_loss", example_batch_loss.numpy().mean())
 
 Epochs = 100
 
-checkpoint_filepath = '/checkpoint/checkpoint {epoch:02d}'
+checkpoint_filepath = 'checkpoint/checkpoint {epoch:02d}'
 
 checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_filepath,
-    monitor='val_acc',
-    mode='max',
+    monitor='loss',
+    mode='min',
     save_best_only=True)
 
 #stops training models if after 10 epochs there is no improvement in the val_loss
-early_stop =  tf.keras.callbacks.EarlyStopping(monitor= "val_loss", patience=10, verbose=1)
+early_stop =  tf.keras.callbacks.EarlyStopping(monitor= "loss", patience=10, verbose=1)
 
 
 #logs epoch, loss, acc_loss, val_loss, vall_acc,
