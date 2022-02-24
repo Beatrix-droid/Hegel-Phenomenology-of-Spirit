@@ -142,8 +142,6 @@ print("scaler_loss", example_batch_loss.numpy().mean())
 
 
 
-#execute training to be run tonight:
-
 Epochs = 100
 
 checkpoint_filepath = 'checkpoint/checkpoint {epoch:02d}'
@@ -154,15 +152,17 @@ checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     mode='min',
     save_best_only=True)
 
-#stops training models if after 10 epochs there is no improvement in the val_loss
+#stops training the model if after 10 epochs there is no improvement in the loss
 early_stop =  tf.keras.callbacks.EarlyStopping(monitor= "loss", patience=10, verbose=1)
 
 
-#logs epoch, loss, acc_loss, val_loss, vall_acc,
+#logs epoch, loss into a csv file. The csv file will then be used to plot an epoch versus Loss graph
 log_csv = tf.keras.callbacks.CSVLogger("logs.csv", separator=",", append=False)
 
-# Model weights are saved at the end of every epoch, if it's the best seen
-# so far.
+
+# Model weights are saved at the end of every epoch, if and only if the model is the best seen
+# so far. These models weights will located in the "checkpoint <epoch number>" directories, which are all
+# subdirectories of the "checkpoint directory"
 model.compile(optimizer="adam",loss=loss)
 
 
@@ -171,7 +171,6 @@ history = model.fit(dataset, epochs=Epochs, callbacks=[checkpoint_callback, earl
 model.save("Hegel_Augmented_model.h5")
 # The model weights (that are considered the best) are loaded into the model.
 #model.load_weights(checkpoint_filepath)
-
 
 
 #generating text using the build model
