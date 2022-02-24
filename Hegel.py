@@ -17,17 +17,17 @@ from keras.layers import Dropout
 #process text
 text = open("Hegel.txt", "rb").read().decode(encoding="utf-8")
 vocab =  sorted(set(text))
-print(f"Lenght of text: {len(text)}")
+print(f"Length of text: {len(text)}")
 print(f"{len(vocab)}unique characters")
 
 
-#printing the frist 250 characters of thet text:
+#printing the first 250 characters of thet text:
 print(text[:250])
 
 
 #vectorising the text:
 
-#creatinga  mapping from unique characters to indices
+#creating a  mapping from unique characters to indices
 #we are mapping strings to a numerical representation. We must create two looukp tables, one mapping
 #characters to numbers, and another for numbers to characters
 
@@ -67,7 +67,7 @@ for item in sequences.take(5):
     print(repr("".join(idx2char[item.numpy()])))
 
 
-#implementing batches to convert indivdual characters to sequences of desired sizes:
+#implementing batches to convert individual characters to sequences of desired sizes:
 
 #for each sequence duplciate it and shift it to form the imput and target text
 def split_input_target(chunk):
@@ -75,7 +75,7 @@ def split_input_target(chunk):
     target_text = chunk[1:]
     return input_text, target_text
 
-#use teh map method to apply the function to each batch
+#use the map method to apply the function to each batch
 dataset = sequences.map(split_input_target)
 
 #print the example of input and example of target
@@ -110,7 +110,7 @@ def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
                                  ])
     return model
 
-# for each character the model looks at the embedding, runs the GRU one timestep witht eh embedding as imput,
+# for each character the model looks at the embedding, runs the GRU one timestep with the embedding as imput,
 #applies the dense layer to generate logits predicting the log-likehood of the next character
 
 model = build_model(vocab_size=len(vocab), embedding_dim=embedding_dim, rnn_units=rnn_units, batch_size = Batch_size)
@@ -119,7 +119,7 @@ model = build_model(vocab_size=len(vocab), embedding_dim=embedding_dim, rnn_unit
 
 for input_example_batch, target_example_batch in dataset.take(1):
     example_batch_predictions =  model(input_example_batch)
-    print(example_batch_predictions.shape, "bathc size, seq length, vocab size")
+    print(example_batch_predictions.shape, "batch size, seq length, vocab size")
 
 
 #creating sample indices for the first example batch
@@ -159,7 +159,7 @@ checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
 
 # Model weights are saved at the end of every epoch, if it's the best seen
 # so far.
-model.compile(loss="mean_squared_error" )
+model.compile(optimizer="adam",loss=loss)
 
 
 history = model.fit(dataset, epochs=Epochs, callbacks=[checkpoint_callback])
