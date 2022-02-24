@@ -6,9 +6,7 @@ import os
 import time
 import tensorflow as tf
 import torch
-import keras
 from keras.models import Sequential
-from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
 
@@ -148,22 +146,35 @@ print("scaler_loss", example_batch_loss.numpy().mean())
 
 Epochs = 100
 
-checkpoint_filepath = '/tmp/checkpoint'
+checkpoint_filepath = '/checkpoint/checkpoint {epoch:02d}'
+
 checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_filepath,
-    save_weights_only=True,
-    monitor='val_accuracy',
+    monitor='val_acc',
     mode='max',
     save_best_only=True)
 
+#stops training models if after 10 epochs there is no improvement in the val_loss
+early_stop =  tf.keras.callbacks.EarlyStopping(monitor= "val_loss", patience=10, verbose=1)
+
+
+#logs epoch, loss, acc_loss, val_loss, vall_acc,
+log_csv = tf.keras.callbacks.CSVLogger("logs.csv", separator=",", append=False)
 
 # Model weights are saved at the end of every epoch, if it's the best seen
 # so far.
 model.compile(optimizer="adam",loss=loss)
 
 
-history = model.fit(dataset, epochs=Epochs, callbacks=[checkpoint_callback])
+history = model.fit(dataset, epochs=Epochs, callbacks=[checkpoint_callback, early_stop, log_csv])
 
-
+model.save("Hegel_Augmented_model.h5")
 # The model weights (that are considered the best) are loaded into the model.
-model.load_weights(checkpoint_filepath)
+#model.load_weights(checkpoint_filepath)
+
+
+
+#generating text using the build model
+
+#model = build_model(len(vocab), embedding_dim, rnn_units, batch_size=1)
+#model.build(tf.TensorShape(1))
